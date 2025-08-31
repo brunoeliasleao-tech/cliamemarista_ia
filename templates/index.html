@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Pesquisa de Diárias, Taxas e Procedimentos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { 
+            background: #f4f8fb; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 700px; 
+            margin-top: 40px; 
+            margin-bottom: 40px;
+            background: #fff; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 10px #d3dbe3;
+            padding: 32px 26px 20px 26px;
+        }
+        .form-label { font-weight: 500; }
+        .btn-primary {
+            background: #0d6efd;
+            border: none;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary:hover {
+            background: #084db6;
+        }
+        .table thead { background: #e7f1fa; }
+        .zebra tbody tr:nth-child(odd) { background: #f8fafc; }
+        .mensagem { margin-top: 32px; color: #6c757d; font-size: 1.12em; text-align: center; }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 16px;
+            background: #e2e7ef;
+            color: #555;
+            border-radius: 0 0 12px 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container shadow">
+        <h2 class="mb-4 mt-2 text-center">
+            <i class="bi bi-search"></i> Pesquisa de Diárias, Taxas e Procedimentos
+        </h2>
+        <form method="post" autocomplete="off" class="mb-3">
+            <div class="mb-3">
+                <label for="convenio" class="form-label"><i class="bi bi-building"></i> Convênio</label>
+                <select name="convenio" id="convenio" class="form-select" required>
+                    <option value="">Selecione um convênio</option>
+                    {% for conv in convenios %}
+                        <option value="{{ conv }}" {% if conv == convenio_selecionado %}selected{% endif %}>{{ conv }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><i class="bi bi-ui-checks"></i> Tipo de Consulta</label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="fonte" id="diarias" value="diariastaxas"
+                            {% if not request.form.fonte or request.form.fonte == "diariastaxas" %}checked{% endif %}>
+                        <label class="form-check-label" for="diarias">Diárias e Taxas</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="fonte" id="procedimentos" value="procedimentos"
+                            {% if request.form.fonte == "procedimentos" %}checked{% endif %}>
+                        <label class="form-check-label" for="procedimentos">Procedimentos</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="pergunta" class="form-label"><i class="bi bi-search"></i> Pesquisar por descrição</label>
+                <input type="text" name="pergunta" id="pergunta" class="form-control" placeholder="Digite sua pergunta..." value="{{ request.form.pergunta or '' }}" required autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-search"></i> Pesquisar
+            </button>
+        </form>
+
+        {% if resposta %}
+            {% if resposta is string %}
+                <div class="mensagem">{{ resposta }}</div>
+            {% elif resposta %}
+                <div class="table-responsive">
+                    <table class="table zebra table-bordered mt-4">
+                        <thead>
+                            <tr>
+                                {% for col in colunas %}
+                                <th>{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for linha in resposta %}
+                            <tr>
+                                {% for col in colunas %}
+                                <td>{{ linha[col] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <footer>
+        &copy; {{ 2025 }} Pesquisa Saúde &mdash; Desenvolvido por Bruno
+    </footer>
+    <!-- Bootstrap JS (opcional, para interatividade de componentes) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
